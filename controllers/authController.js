@@ -42,3 +42,26 @@ exports.login = catchAsync(async (req, res, next) => {
     token: signToken(user._id)
   });
 });
+
+exports.protect = catchAsync(async (req, res, next) => {
+  //1) make sure token is passed in
+  let token;
+  const { authorization } = req.headers;
+  if (authorization && authorization.startsWith('Bearer')) {
+    token = authorization.split(' ')[1];
+  }
+
+  if (!token)
+    return next(
+      new AppError('You are not logged in. Please log in to grant access.')
+    );
+
+  //2) verifying token
+
+  //3) check if user exists
+
+  //4) check if user hasn't changed their password
+
+  //5) grant access
+  next();
+});
