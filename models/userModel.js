@@ -35,7 +35,8 @@ const userSchema = new mongoose.Schema({
       },
       message: 'password and confrim password are not the same'
     }
-  }
+  },
+  passwordChangedAt: Date
 });
 
 //encrypt password before saving
@@ -51,6 +52,17 @@ userSchema.methods.isCorrectPassword = async function(
   passwordHash
 ) {
   return await bcrypt.compare(enteredPassword, passwordHash);
+};
+
+userSchema.methods.hasChangedPasswordAfter = function(JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const passwordChangeDateInMS = Math.floor(
+      this.passwordChangedAt.getTime() / 1000
+    );
+    return passwordChangeDateInMS > JWTTimestamp; // 100 > 400
+  }
+  // false means NOT changed
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);
