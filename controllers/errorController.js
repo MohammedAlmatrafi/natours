@@ -55,7 +55,7 @@ const sendErrorProd = (err, res) => {
   }
 };
 
-//global error handling middleware, defined by 5 an error first 5 args.
+//global error handling middleware, defined by 5 args (error first)
 //trigger this middleware by passing the error object to the next();
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
