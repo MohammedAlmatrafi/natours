@@ -32,10 +32,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 exports.getTour = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   if (id.length * 1 !== 24) return next();
-  const tour = await Tour.findById(id).populate({
-    path: 'guides',
-    select: '-__v -passwordChangedAt'
-  });
+  const tour = await Tour.findById(id);
   //same as    await Tour.findOne({ _id: req.params.id })
 
   if (!tour) {

@@ -3,55 +3,61 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
-  userName: {
-    type: String,
-    required: [true, 'user must have a username'],
-    trim: true
-  },
-  email: {
-    type: String,
-    required: [true, 'user must have an E-mail address'],
-    trim: true,
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, 'please enter a valid e-mail address']
-  },
-  photo: {
-    type: String
-  },
-  role: {
-    type: String,
-    enum: ['user', 'guide', 'lead-guide', 'admin'],
-    default: 'user'
-  },
-  password: {
-    type: String,
-    required: [true, 'user must have a password'],
-    trim: true,
-    minlength: 8,
-    select: false
-  },
-  passwordConfirm: {
-    type: String,
-    required: [true, 'user must confirm password'],
-    trim: true,
-    validate: {
-      validator: function(el) {
-        return el === this.password;
-      },
-      message: 'password and confrim password are not the same'
+const userSchema = new mongoose.Schema(
+  {
+    userName: {
+      type: String,
+      required: [true, 'user must have a username'],
+      trim: true
+    },
+    email: {
+      type: String,
+      required: [true, 'user must have an E-mail address'],
+      trim: true,
+      unique: true,
+      lowercase: true,
+      validate: [validator.isEmail, 'please enter a valid e-mail address']
+    },
+    photo: {
+      type: String
+    },
+    role: {
+      type: String,
+      enum: ['user', 'guide', 'lead-guide', 'admin'],
+      default: 'user'
+    },
+    password: {
+      type: String,
+      required: [true, 'user must have a password'],
+      trim: true,
+      minlength: 8,
+      select: false
+    },
+    passwordConfirm: {
+      type: String,
+      required: [true, 'user must confirm password'],
+      trim: true,
+      validate: {
+        validator: function(el) {
+          return el === this.password;
+        },
+        message: 'password and confrim password are not the same'
+      }
+    },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetTokenExpires: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false
     }
   },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetTokenExpires: Date,
-  active: {
-    type: Boolean,
-    default: true,
-    select: false
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
-});
+);
 
 //encrypt password before saving
 userSchema.pre('save', async function(next) {
