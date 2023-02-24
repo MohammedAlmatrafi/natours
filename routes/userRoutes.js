@@ -8,22 +8,23 @@ router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.post('/forgot-password', authController.forgotPassword);
 router.patch('/reset-password/:token', authController.resetPassword);
-router.patch(
-  '/update-password',
-  authController.protect,
-  authController.updatePassword
-);
 
-router.patch('/update-user', authController.protect, userController.updateMe);
-router.delete('/delete-user', authController.protect, userController.deleteMe);
+//protect all routes after this middleware, i.e. needs to be logged in.
+router.use(authController.protect);
+
+router.patch('/update-password', authController.updatePassword);
+
+router.get('/me', userController.getMe, userController.getUser);
+
+router.patch('/update-user', userController.updateMe);
+router.delete('/delete-user', userController.deleteMe);
+
+//restrict all routes after this middleware. i.e. allow only admins to access them.
+router.use(authController.restrictTo('admin'));
 
 router
   .route('/')
-  .get(
-    authController.protect,
-    authController.restrictTo('admin'),
-    userController.getAllUsers
-  )
+  .get(userController.getAllUsers)
   .post(userController.createUser);
 
 router

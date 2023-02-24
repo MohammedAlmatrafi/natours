@@ -34,7 +34,8 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       default: 4.5,
       max: [5, 'tour ratings average is over the 5 limit'],
-      min: [1, 'tour ratings average is under the 1 limit']
+      min: [1, 'tour ratings average is under the 1 limit'],
+      set: value => Math.round(value * 10) / 10 // 4.6666 -> 46.666 -> 47 -> 4.7 ez fix
     },
     ratingsQuantity: {
       type: Number,
@@ -115,9 +116,18 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 tourSchema.virtual('durationWeeks').get(function() {
   if (!this.duration) return;
   return this.duration / 7;
+});
+
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
 });
 //document middleware; 'save' hook is just before .save() and .create(), has access to document
 tourSchema.pre('save', function(next) {

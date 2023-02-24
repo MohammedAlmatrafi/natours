@@ -172,7 +172,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user._id).select('+password');
+  const user = await User.findById(req.user.id).select('+password');
   const { currentPassword, password, passwordConfirm } = req.body;
   if (!currentPassword)
     return next(new AppError('Please provide currentPassword'), 400);
